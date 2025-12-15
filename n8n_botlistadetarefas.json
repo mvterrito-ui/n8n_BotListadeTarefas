@@ -1,0 +1,361 @@
+{
+  "name": "Bot Lista de Tarefas",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "b5881aa9-c5fc-4d03-9f14-3d7d6375c99b",
+      "name": "Mensagem Recebida",
+      "webhookId": "c03bc404-6a6f-45c7-a87e-fa850675f719",
+      "credentials": {
+        "telegramApi": {
+          "id": "BsucsJNtiwaRjPDF",
+          "name": "BOTListar_tarefas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "xEGpIMvqCWTvcquZ",
+          "mode": "list",
+          "cachedResultName": "Tarefas",
+          "cachedResultUrl": "/projects/2ho1ywqPgXncmkGx/datatables/xEGpIMvqCWTvcquZ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $json.message.text }}"
+          },
+          "matchingColumns": [
+            "Nome"
+          ],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        656,
+        144
+      ],
+      "id": "32333824-5bd1-438c-b7ed-516f0b1557f8",
+      "name": "Inserir tarefa"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "xEGpIMvqCWTvcquZ",
+          "mode": "list",
+          "cachedResultName": "Tarefas",
+          "cachedResultUrl": "/projects/2ho1ywqPgXncmkGx/datatables/xEGpIMvqCWTvcquZ"
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -64
+      ],
+      "id": "6a60153d-8d28-4043-acf8-7c6b184ebde1",
+      "name": "Listar Tarefas"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Mensagem Recebida').item.json.message.chat.id }}",
+        "text": "={{ $json.Nome }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        -64
+      ],
+      "id": "d3a040fb-78a7-4006-9cb6-4d7d9211f8ee",
+      "name": "Enviar tarefa listada",
+      "webhookId": "b4f10a50-9604-40cb-88b5-b605c332be1a",
+      "credentials": {
+        "telegramApi": {
+          "id": "BsucsJNtiwaRjPDF",
+          "name": "BOTListar_tarefas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "33bfd79c-e251-4eb6-85dd-ea78aad30749",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/ver",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        64
+      ],
+      "id": "c041eb0f-eba9-4c32-a65c-f9dcdcb5fec6",
+      "name": "a / ver"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "xEGpIMvqCWTvcquZ",
+          "mode": "list",
+          "cachedResultName": "Tarefas",
+          "cachedResultUrl": "/projects/2ho1ywqPgXncmkGx/datatables/xEGpIMvqCWTvcquZ"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Nome",
+              "keyValue": "={{ $('Mensagem Recebida').item.json.message.reply_to_message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        416,
+        -208
+      ],
+      "id": "b12f31dd-5169-444a-a5ec-dbb0a2ba0e15",
+      "name": "Delete row(s)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Mensagem Recebida').item.json.message.chat.id }}",
+        "text": "=tarefa ( {{ $json.Nome }}) deletada com sucesso!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        -224
+      ],
+      "id": "90aa5182-2130-4a1e-b05f-412348b96cda",
+      "name": "deletar tarefa",
+      "webhookId": "563c6fdb-620f-4e25-95f0-6b2f55881d63",
+      "credentials": {
+        "telegramApi": {
+          "id": "BsucsJNtiwaRjPDF",
+          "name": "BOTListar_tarefas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cc2eb923-4baf-4b65-b3f7-93d34863d0bf",
+              "leftValue": "={{ $json.message.reply_to_message.message_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -80
+      ],
+      "id": "76b53253-790e-4d2a-a0cb-f2f8c441b532",
+      "name": "se for uma resposta"
+    }
+  ],
+  "pinData": {
+    "Mensagem Recebida": [
+      {
+        "json": {
+          "update_id": 202524044,
+          "message": {
+            "message_id": 34,
+            "from": {
+              "id": 8281571518,
+              "is_bot": false,
+              "first_name": "Vinicio",
+              "last_name": "T",
+              "language_code": "pt-br"
+            },
+            "chat": {
+              "id": 8281571518,
+              "first_name": "Vinicio",
+              "last_name": "T",
+              "type": "private"
+            },
+            "date": 1765377340,
+            "reply_to_message": {
+              "message_id": 18,
+              "from": {
+                "id": 8546980799,
+                "is_bot": true,
+                "first_name": "bot lista de tarefas",
+                "username": "botlistadetarefastrto_bot"
+              },
+              "chat": {
+                "id": 8281571518,
+                "first_name": "Vinicio",
+                "last_name": "T",
+                "type": "private"
+              },
+              "date": 1765291179,
+              "text": "comprar ovo"
+            },
+            "text": "concluido"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Mensagem Recebida": {
+      "main": [
+        [
+          {
+            "node": "se for uma resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Tarefas": {
+      "main": [
+        [
+          {
+            "node": "Enviar tarefa listada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "a / ver": {
+      "main": [
+        [
+          {
+            "node": "Listar Tarefas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Inserir tarefa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete row(s)": {
+      "main": [
+        [
+          {
+            "node": "deletar tarefa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "se for uma resposta": {
+      "main": [
+        [
+          {
+            "node": "Delete row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "a / ver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f49a51f7-4e69-489d-89d9-94517c4963c9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fbde9e29b08ff6214030ecb766f80ebc976d1689691b7bd527d1c44a681bb38f"
+  },
+  "id": "xHVDi4nINrlJ16aK",
+  "tags": []
+}
